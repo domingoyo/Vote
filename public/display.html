@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 </head>
+
 <body>
 
     <div class="container">
@@ -40,7 +42,7 @@
     <audio id="sfx-fail" src="/sound/fail.MP3"></audio>
 
     <script>
-        const socket = io();
+        const socket = io({ query: { role: 'display' } });
         const views = {
             waiting: document.getElementById('view-waiting'),
             voting: document.getElementById('view-voting'),
@@ -61,7 +63,7 @@
 
         // QR Code Generation
         // Using window.location.hostname to generate the link dynamically
-        const joinUrl = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+        const joinUrl = window.location.origin;
         QRCode.toCanvas(els.qrCanvas, joinUrl, { width: 300 }, function (error) {
             if (error) console.error(error);
             console.log('QR Generated for:', joinUrl);
@@ -69,7 +71,7 @@
 
         function showView(name) {
             Object.values(views).forEach(el => el.classList.add('hidden'));
-            if(views[name]) views[name].classList.remove('hidden');
+            if (views[name]) views[name].classList.remove('hidden');
         }
 
         socket.on('stats', (data) => {
@@ -91,7 +93,7 @@
             showView('result');
             els.resultIcon.innerHTML = '';
             els.resultText.innerText = '';
-            
+
             // Play Drum
             sfx.drum.currentTime = 0;
             sfx.drum.play().catch(e => console.log('Audio play failed', e));
@@ -99,13 +101,13 @@
             // Wait for drum duration (approx 3-4s usually, but let's say 3s for impact)
             // Or better, listen to 'ended' if we want perfect sync, but drumrolls usually end with a crash
             // Let's assume 3 seconds delay for suspense
-            
+
             setTimeout(() => {
                 const isPass = data.result === 'pass';
                 els.resultIcon.innerHTML = isPass ? '✅' : '❌';
                 els.resultText.innerText = isPass ? 'SUCCESS' : 'FAILED';
                 els.resultIcon.className = 'result-anim ' + (isPass ? 'pass-icon' : 'fail-icon');
-                
+
                 if (isPass) {
                     sfx.cheer.currentTime = 0;
                     sfx.cheer.play();
@@ -124,4 +126,5 @@
 
     </script>
 </body>
+
 </html>

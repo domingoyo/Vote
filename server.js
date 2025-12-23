@@ -34,18 +34,26 @@ function broadcastStats() {
 }
 
 io.on('connection', (socket) => {
-    gameState.connectedUsers++;
+    const role = socket.handshake.query.role;
+
+    // Only count voters (users without specific roles or implicit voters)
+    if (role !== 'admin' && role !== 'display') {
+        gameState.connectedUsers++;
+    }
+
     // Send current state to new user
     socket.emit('state-change', gameState.step);
     broadcastStats();
 
-    console.log('User connected', socket.id);
+    console.log(`User connected [${role || 'voter'}]: ${socket.id}`);
 
     socket.on('disconnect', () => {
-        gameState.connectedUsers--;
-        if (gameState.connectedUsers < 0) gameState.connectedUsers = 0;
+        if (role !== 'admin' && role !== 'display') {
+            gameState.connectedUsers--;
+            if (gameState.connectedUsers < 0) gameState.connectedUsers = 0;
+        }
         broadcastStats();
-        console.log('User disconnected', socket.id);
+        console.log(`User disconnected [${role || 'voter'}]: ${socket.id}`);
     });
 
     // User Voting
@@ -90,10 +98,10 @@ io.on('connection', (socket) => {
 app.get('/qr', (req, res) => {
     // In a real local setup, we need the local IP.
     // For now, let's just assume localhost or let client handle it.
-    res.send('QR Endpoint'); 
+    res.send('QR Endpoint');
 });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`listening on *:${PORT}`);
+    console.log(`listening on *:${PORT}`);
 });

@@ -25,7 +25,7 @@
 
     <div class="container hidden" id="view-wait">
         <h1 class="status-text">Wait...</h1>
-        <p>Voting is currently closed or locked.</p>
+        <p>The host has not started the voting round yet.</p>
     </div>
 
     <div class="container hidden" id="view-voted">
@@ -55,8 +55,18 @@
         }
 
         socket.on('state-change', (step) => {
-            if (step === 'WAITING' || step === 'LOCKED' || step === 'REVEALED') {
+            if (step === 'WAITING') {
                 showView('wait');
+                views.wait.querySelector('h1').innerText = "Wait...";
+                views.wait.querySelector('p').innerText = "The host has not started the voting round yet.";
+            } else if (step === 'LOCKED') {
+                showView('wait');
+                views.wait.querySelector('h1').innerText = "Locked";
+                views.wait.querySelector('p').innerText = "Voting has been locked.";
+            } else if (step === 'REVEALED') {
+                showView('wait');
+                views.wait.querySelector('h1').innerText = "Result";
+                views.wait.querySelector('p').innerText = "Look at the big screen!";
             } else if (step === 'VOTING') {
                 if (!hasVoted) {
                     showView('vote');

@@ -38,11 +38,14 @@
             RESULT</button>
         <div style="height: 20px;"></div>
         <button class="btn btn-danger" onclick="socket.emit('admin:reset')">RESET ROUND</button>
+        <div style="height: 10px;"></div>
+        <button class="btn" style="background-color:#334155" onclick="window.open('/display.html', '_blank')">OPEN
+            DISPLAY PAGE ↗</button>
 
     </div>
 
     <script>
-        const socket = io();
+        const socket = io({ query: { role: 'admin' } });
 
         const els = {
             state: document.getElementById('current-state'),
