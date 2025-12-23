@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Admin Control</h1>
+        <p style="margin-bottom:2rem">Current State: <span id="current-state"
+                style="font-weight:bold; color:var(--primary-color)">LOADING...</span></p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="count-yes" style="color:var(--success-color)">0</div>
+                <div>PASS</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="count-no" style="color:var(--danger-color)">0</div>
+                <div>FAIL</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="count-conn">0</div>
+                <div>Connected</div>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="socket.emit('admin:start')">START VOTING</button>
+        <button class="btn btn-primary" onclick="socket.emit('admin:lock')" style="background-color: #f59e0b;">LOCK
+            VOTING</button>
+        <button class="btn btn-primary" onclick="socket.emit('admin:reveal')" style="background-color: #8b5cf6;">REVEAL
+            RESULT</button>
+        <div style="height: 20px;"></div>
+        <button class="btn btn-danger" onclick="socket.emit('admin:reset')">RESET ROUND</button>
+
+    </div>
+
+    <script>
+        const socket = io();
+
+        const els = {
+            state: document.getElementById('current-state'),
+            yes: document.getElementById('count-yes'),
+            no: document.getElementById('count-no'),
+            conn: document.getElementById('count-conn')
+        };
+
+        socket.on('stats', (data) => {
+            els.state.innerText = data.step;
+            els.yes.innerText = data.yes;
+            els.no.innerText = data.no;
+            els.conn.innerText = data.connected;
+        });
+
+    </script>
+</body>
+
+</html>

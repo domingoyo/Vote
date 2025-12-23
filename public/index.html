@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vote</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        /* Specific mobile adjustments */
+        body {
+            padding: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container user-voting-area" id="view-vote">
+        <h2 id="vote-instruction">Cast Your Vote</h2>
+        <button class="btn btn-success vote-btn" onclick="castVote('yes')">PASS<br>過關</button>
+        <button class="btn btn-danger vote-btn" onclick="castVote('no')">FAIL<br>不過關</button>
+    </div>
+
+    <div class="container hidden" id="view-wait">
+        <h1 class="status-text">Wait...</h1>
+        <p>Voting is currently closed or locked.</p>
+    </div>
+
+    <div class="container hidden" id="view-voted">
+        <h1 class="status-text">Vote Sent!</h1>
+        <p class="counter">Waiting for results...</p>
+    </div>
+
+    <script>
+        const socket = io();
+        const views = {
+            vote: document.getElementById('view-vote'),
+            wait: document.getElementById('view-wait'),
+            voted: document.getElementById('view-voted')
+        };
+
+        let hasVoted = false;
+
+        function showView(name) {
+            Object.values(views).forEach(el => el.classList.add('hidden'));
+            if (views[name]) views[name].classList.remove('hidden');
+        }
+
+        function castVote(val) {
+            socket.emit('vote', val);
+            hasVoted = true;
+            showView('voted');
+        }
+
+        socket.on('state-change', (step) => {
+            if (step === 'WAITING' || step === 'LOCKED' || step === 'REVEALED') {
+                showView('wait');
+            } else if (step === 'VOTING') {
+                if (!hasVoted) {
+                    showView('vote');
+                } else {
+                    showView('voted');
+                }
+            }
+        });
+
+        socket.on('reset', () => {
+            hasVoted = false;
+        });
+
+        // Initial check is handled by server sending 'state-change' on connect
+
+    </script>
+</body>
+
+</html>
