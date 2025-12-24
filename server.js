@@ -12,6 +12,8 @@ const fs = require('fs');
 app.use(express.static(path.join(__dirname, 'public')));
 // Serve sound files from 'sound' directory
 app.use('/sound', express.static(path.join(__dirname, 'sound')));
+// Serve video files from 'video' directory
+app.use('/video', express.static(path.join(__dirname, 'video')));
 
 // Game State
 let gameState = {

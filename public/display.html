@@ -41,6 +41,10 @@
     <audio id="sfx-cheer" src="/sound/cheer.MP3"></audio>
     <audio id="sfx-fail" src="/sound/fail.MP3"></audio>
 
+    <!-- VIDEO OVERLAYS -->
+    <video id="vid-ok" class="fullscreen-video hidden" src="/video/ok.webm" muted></video>
+    <video id="vid-fail" class="fullscreen-video hidden" src="/video/fail.webm" muted></video>
+
     <script>
         const socket = io({ query: { role: 'display' } });
         const views = {
@@ -59,6 +63,10 @@
             drum: document.getElementById('sfx-drum'),
             cheer: document.getElementById('sfx-cheer'),
             fail: document.getElementById('sfx-fail')
+        };
+        const vids = {
+            ok: document.getElementById('vid-ok'),
+            fail: document.getElementById('vid-fail')
         };
 
         // QR Code Generation
@@ -111,9 +119,19 @@
                 if (isPass) {
                     sfx.cheer.currentTime = 0;
                     sfx.cheer.play();
+
+                    // Play OK video
+                    vids.ok.classList.remove('hidden');
+                    vids.ok.currentTime = 0;
+                    vids.ok.play().catch(e => console.error("Video play failed", e));
                 } else {
                     sfx.fail.currentTime = 0;
                     sfx.fail.play();
+
+                    // Play FAIL video
+                    vids.fail.classList.remove('hidden');
+                    vids.fail.currentTime = 0;
+                    vids.fail.play().catch(e => console.error("Video play failed", e));
                 }
             }, 3000); // 3 seconds drumroll
         });
@@ -121,6 +139,12 @@
         socket.on('reset', () => {
             // Stop all sounds
             Object.values(sfx).forEach(audio => { audio.pause(); audio.currentTime = 0; });
+            // Stop and hide videos
+            Object.values(vids).forEach(vid => {
+                vid.pause();
+                vid.currentTime = 0;
+                vid.classList.add('hidden');
+            });
             views.voting.querySelector('h1').innerText = "Voting In Progress...";
         });
 
