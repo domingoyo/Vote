@@ -42,10 +42,12 @@
     <audio id="sfx-fail" src="/sound/fail.MP3"></audio>
 
     <!-- VIDEO OVERLAYS -->
-    <video id="vid-bg" class="bg-video" src="/video/bg.webm" autoplay loop muted></video>
-    <video id="vid-walk" class="fullscreen-video hidden" src="/video/walk.webm"></video>
-    <video id="vid-ok" class="fullscreen-video hidden" src="/video/ok.webm" muted></video>
-    <video id="vid-fail" class="fullscreen-video hidden" src="/video/fail.webm" muted></video>
+    <video id="vid-bg" class="bg-video" src="/video/bg.webm" autoplay loop muted playsinline webkit-playsinline></video>
+    <video id="vid-walk" class="fullscreen-video hidden" src="/video/walk.webm" playsinline webkit-playsinline></video>
+    <video id="vid-ok" class="fullscreen-video hidden" src="/video/ok.webm" muted playsinline
+        webkit-playsinline></video>
+    <video id="vid-fail" class="fullscreen-video hidden" src="/video/fail.webm" muted playsinline
+        webkit-playsinline></video>
 
     <script>
         const socket = io({ query: { role: 'display' } });
